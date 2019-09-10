@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="power-ranking.css">
+	<link rel="stylesheet" type="text/css" href="screenshot.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="libraries/html2canvas.min.js"></script>
+	<script src="libraries/Blob.js"></script>
+	<script src="libraries/canvas-toBlob.js"></script>
+	<script src="libraries/FileSaver.min.js"></script>
+	<script type="text/javascript">
+
+			$ (document).ready (async function () {
+				try {
+				// Loop through first user and populate first row
+				// Check user against previous week's rankings so we can see trend
+				// Insert into table
+				// Create ReadMe
+				const tableElement = $('#powerRankingTable tbody:last-child');
+				const outerDiv = $('#powerRanking');
+				const currentWeek = await $.get ('current_power_rankings.json');
+				const previousWeek = await $.get ('previous_power_rankings.json');
+				let tableHTML;
+				for (let i = 0; i < currentWeek.length; i++) {
+					const previousRanking = previousWeek.findIndex ((element) => {
+						return element.managerName === currentWeek[i].managerName;
+					});
+					const rowHTML = generateTeamRow (i + 1, previousRanking + 1, currentWeek[i]);
+					tableElement.append(rowHTML);
+				}
+
+
+				let circleWidth = 60;
+				let circleCount = 0;
+				let circleMid = currentWeek / 2;
+				let circleChild = 3;
+				let resultString = '<style>';
+				currentWeek.forEach((ranking) => {
+					let backgroundColor = (circleCount < circleMid) ? "#1D7225;" : "firebrick;";
+					resultString = resultString + "tr.rank:nth-child(" + circleChild + ") .ranking {";
+					resultString = resultString + "  background: " + backgroundColor;
+					resultString = resultString + "  width: " + circleWidth + "px;";
+					resultString = resultString + "  height: " + circleWidth + "px;";
+					resultString = resultString + "  line-height: " + circleWidth + "px;";
+					resultString = resultString + "}";
+					if(circleCount === circleMid - 1) {}
+					else if(circleCount < circleMid) {
+						circleWidth = circleWidth - 5
+					} else {
+						circleWidth = circleWidth + 5
+					}
+					circleCount = circleCount + 1;
+					circleChild = circleChild + 1
+				});
+				resultString = resultString + "</style>";
+				outerDiv.append(resultString);
+
+
+				console.log ('awaited current week');
+				console.log (currentWeek)
+				}
+				catch (e) {
+					console.error(e);
+				}
+			});
+
+			const generateTeamRow = function (ranking, lastWeeksRanking, rankingObject) {
+				let delta = (lastWeeksRanking) ? parseInt (ranking) - parseInt (lastWeeksRanking) : 0;
+				let lastWeekPositionString = (lastWeeksRanking) ? 'Last Week: ' + lastWeeksRanking : '';
+				let managerName = rankingObject.managerName;
+				let teamName = "<div class='manager-name'>" + managerName + "</div>";
+				return "<tr class='rank'> <td>" +
+						"<div class='ranking'>" + ranking + "</div>" +
+						"</td><td class='teamPicture' style='width:25px'></td>" +
+						"<td style='width:20%;'>" + teamName + "<div class='team-record'>" + rankingObject.record +
+						"</div></td>" +
+						"<td class='center'><div class='delta-div'><div class='" + getDeltaSymbolClass (delta) + "'></div>" +
+						"<div class='delta " + getDeltaClass (delta) + "'>" + getDeltaString (delta) + "</div></div" +
+						"<div class='last-weeks-position'>" + lastWeekPositionString + "</div></td>" +
+						"<td class='center' style='width: 50%';>" + rankingObject.description + "</td></tr>";
+			};
+
+			const getDeltaSymbolClass = (delta) => {
+				if(delta < 0) {
+					return "up";
+				} else if(delta > 0) {
+					return "down";
+				} else {
+					return "no-change";
+				}
+			};
+
+			const getDeltaClass = (delta) => {
+				if(delta < 0) {
+					return "delta-up";
+				} else if(delta > 0) {
+					return "delta-down";
+				} else {
+					return "";
+				}
+			};
+
+			const getDeltaString = (delta) => {
+				if(delta === 0) {
+					return "---";
+				} else if (delta < 0){
+					return -delta;
+				} else {
+					return delta;
+				}
+			};
+
+			const generateScreenshot = function() {
+				html2canvas(document.getElementById("powerRanking"),
+					{width: "fit-content", allowTaint: true}).then(function(canvas) {
+					canvas.toBlob((blob) => {
+						saveAs(blob, "rankings.png");
+						window.alert('Saved Power Rankings');
+					});
+				});
+			}
+	</script>
+	<meta charset="UTF-8">
+	<title>Power Rankings</title>
+</head>
+<body>
+	<div id='powerRanking'>
+		<table id='powerRankingTable'>
+			<tr> <th colspan='5'><h3>Title Goes Here</h3></th> </tr>
+			<tr>
+				<td class='center'>
+					<b>Rank</b></td>
+				<td colspan='2' class='center'><b>Team / Record</b></td>
+				<td class='center'><b>Trending</b></td>
+				<td class='center'><b>Comments</b></td>
+			</tr>
+		</table>
+	</div>
+
+	<button onclick="generateScreenshot()">Download Rankings Image</button>
+</body>
+</html>
