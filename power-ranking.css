@@ -157,3 +157,7 @@ tr.rank td:nth-child(5) {
   font-weight: bold;
   font-size: 11px;
 }
+.download-button {
+    margin: 0 auto;
+    display: block;
+}

@@ -13,10 +13,6 @@
 
 			$ (document).ready (async function () {
 				try {
-				// Loop through first user and populate first row
-				// Check user against previous week's rankings so we can see trend
-				// Insert into table
-				// Create ReadMe
 				const tableElement = $('#powerRankingTable tbody:last-child');
 				const outerDiv = $('#powerRanking');
 				const leagueConfig = await $.get ('league_config.json');
@@ -59,12 +55,9 @@
 				});
 				resultString = resultString + "</style>";
 				outerDiv.append(resultString);
-
-
-				console.log ('awaited current week');
-				console.log (currentWeek)
 				}
 				catch (e) {
+					// Catch error so something displays rather than nothing
 					console.error(e);
 				}
 			});
@@ -142,6 +135,9 @@
 		</table>
 	</div>
 
-	<button onclick="generateScreenshot()">Download Rankings Image</button>
+	<div style="height: 5vh;"></div>
+	<div style="width: 100%;">
+		<button onclick="generateScreenshot()" class="download-button">Download Rankings Image</button>
+	</div>
 </body>
 </html>
