@@ -10,7 +10,7 @@ After each week, you should copy your current_power_rankings to the previous_pow
 
 Teams are tracked by their manager's name so this cannot change between weeks otherwise the change will not be calculated correctly.
 
-After you have edited the json files correctly, open either the windows_run_server.bat or the mac_run_server.sh file. 
+After you have edited the json files correctly, open either the windows_run_server.bat or the mac_run_server.sh file. Navigate to http://localhost:8000/manual_power_rankings.html 
 
 To download, hit the download button and it will save a power rankings image file.
 
