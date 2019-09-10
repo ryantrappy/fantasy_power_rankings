@@ -19,8 +19,12 @@
 				// Create ReadMe
 				const tableElement = $('#powerRankingTable tbody:last-child');
 				const outerDiv = $('#powerRanking');
+				const leagueConfig = await $.get ('league_config.json');
 				const currentWeek = await $.get ('current_power_rankings.json');
 				const previousWeek = await $.get ('previous_power_rankings.json');
+				// Set config items
+				document.getElementById("rankingTitle").innerText = leagueConfig.rankingsTitle;
+				// Generate Table
 				let tableHTML;
 				for (let i = 0; i < currentWeek.length; i++) {
 					const previousRanking = previousWeek.findIndex ((element) => {
@@ -127,7 +131,7 @@
 <body>
 	<div id='powerRanking'>
 		<table id='powerRankingTable'>
-			<tr> <th colspan='5'><h3>Title Goes Here</h3></th> </tr>
+			<tr> <th colspan='5'><h3 id="rankingTitle">Title Goes Here</h3></th> </tr>
 			<tr>
 				<td class='center'>
 					<b>Rank</b></td>
