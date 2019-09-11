@@ -72,12 +72,11 @@
 			const generateTeamRow = function (ranking, lastWeeksRanking, rankingObject) {
 				let delta = (lastWeeksRanking) ? parseInt (ranking) - parseInt (lastWeeksRanking) : 0;
 				let lastWeekPositionString = (lastWeeksRanking) ? 'Last Week: ' + lastWeeksRanking : '';
-				let managerName = rankingObject.managerName;
-				let teamName = "<div class='manager-name'>" + managerName + "</div>";
+				let teamName = "<div class='manager-name'>" + rankingObject.teamName + "</div>";
 				return "<tr class='rank'> <td>" +
 						"<div class='ranking'>" + ranking + "</div>" +
 						"</td><td class='teamPicture' style='width:25px'></td>" +
-						"<td style='width:20%;'>" + teamName + "<div class='team-record'>" + rankingObject.record +
+						"<td style='width:20%;'>" + teamName + "<div class='team-record'>" + rankingObject.managerName + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+ rankingObject.record +
 						"</div></td>" +
 						"<td class='center'><div class='delta-div'><div class='" + getDeltaSymbolClass (delta) + "'></div>" +
 						"<div class='delta " + getDeltaClass (delta) + "'>" + getDeltaString (delta) + "</div></div" +
