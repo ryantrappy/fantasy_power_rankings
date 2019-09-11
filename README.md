@@ -14,6 +14,8 @@ After you have edited the json files correctly, open either the windows_run_serv
 
 To download, hit the download button and it will save a power rankings image file.
 
+![example](https://i.imgur.com/nGS0gXZ.png)
+
 ### Acknowledgments
 
 Project based on work done originally by Joshua Mayer on the project https://github.com/jpmayer/fantasy-chrome-extension
