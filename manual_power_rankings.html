@@ -20,6 +20,12 @@
 				const previousWeek = await $.get ('previous_power_rankings.json');
 				// Set config items
 				document.getElementById("rankingTitle").innerText = leagueConfig.rankingsTitle;
+				// If there is introductory text, display it
+				if(leagueConfig.introduction && leagueConfig.introduction.length > 0) {
+					document.getElementById("introductionRow").innerText = leagueConfig.introduction;
+				} else {
+					$("#introduction").css("display","none");
+				}
 				// Generate Table
 				let tableHTML;
 				for (let i = 0; i < currentWeek.length; i++) {
@@ -125,7 +131,12 @@
 <body>
 	<div id='powerRanking'>
 		<table id='powerRankingTable'>
-			<tr> <th colspan='5'><h3 id="rankingTitle">Title Goes Here</h3></th> </tr>
+			<tr>
+				<th colspan='5'><h3 id="rankingTitle">Title Goes Here</h3></th>
+			</tr>
+			<tr id="introduction">
+				<th colspan='5' id="introductionRow"></th>
+			</tr>
 			<tr>
 				<td class='center'>
 					<b>Rank</b></td>

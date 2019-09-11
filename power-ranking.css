@@ -19,7 +19,7 @@
 #powerRanking table tr:nth-child(odd){
   background-color:#F2F2E8;
 }
-#powerRanking table tr:nth-child(2) {
+#powerRanking table tr:nth-child(3) {
   background-color:#6DBB75;
 }
 #powerRanking table tr:first-child {
