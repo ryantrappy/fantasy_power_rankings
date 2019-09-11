@@ -39,7 +39,7 @@
 
 				let circleWidth = 60;
 				let circleCount = 0;
-				let circleMid = currentWeek / 2;
+				let circleMid = currentWeek.length / 2;
 				let circleChild = 4;
 				let resultString = '<style>';
 				currentWeek.forEach((ranking) => {
@@ -56,8 +56,8 @@
 					} else {
 						circleWidth = circleWidth + 5
 					}
-					circleCount = circleCount + 1;
-					circleChild = circleChild + 1
+					circleCount++;
+					circleChild++;
 				});
 				resultString = resultString + "</style>";
 				outerDiv.append(resultString);
