@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Injectable, OnInit} from '@angular/core';
 import * as html2canvas from "./libraries/html2canvas.min.js"
 import * as fileSaver from "./libraries/FileSaver.min.js"
+import { StorageService} from "./storage.service";
+
 
 @Component({
   selector: 'app-root',
@@ -8,6 +10,26 @@ import * as fileSaver from "./libraries/FileSaver.min.js"
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{
+
+  constructor(private storageService: StorageService) {
+    this.configsArray = storageService.getLeagueConfigs();
+    if(!this.configsArray || this.configsArray.length === 0) {
+      this.configsArray = [
+        {
+          "rankingsTitle": "Rankings Title",
+          "introduction": "This is introduction text if the user wants to preface the rankings with some text. The text can be an introduction to the year or anything else.",
+          "leagueName": "test"
+        }
+      ]
+    }
+    else {
+      this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+      this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+      this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+      this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+    }
+    this.leagueConfig = this.configsArray[0];
+  }
   title = 'fantasy-power-rankings';
   currentWeekRanking: Array<TeamRanking> = [
     {
@@ -77,13 +99,25 @@ export class AppComponent implements OnInit{
       "managerName": "Joe Loser1"
     }
   ];
-  leagueConfig: LeagueConfig = {
-    "rankingsTitle": "Rankings Title",
-    "introduction": "This is introduction text if the user wants to preface the rankings with some text. The text can be an introduction to the year or anything else."
-  };
+  currentWeekRankingForm: Array<TeamRanking> = this.currentWeekRanking;
+  previousWeekRankingForm: Array<TeamRanking> = this.previousWeekRanking;
+  leagueConfig: LeagueConfig;
+  configsArray: Array<LeagueConfig> = [];
 
   ngOnInit(): void {
     this.getRankingImage();
+  }
+  regenerateRankings() {
+    this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
+    this.storageService.setPreviousWeekFromStorage(this.previousWeekRankingForm, this.leagueConfig.leagueName);
+    this.storageService.setLeagueConfigs(this.configsArray);
+    // Deep clone both arrays so that mutations don't affect table
+    this.currentWeekRanking = [
+      ...this.currentWeekRankingForm
+    ].map(i => ({ ...i}));
+    this.previousWeekRanking = [
+      ...this.previousWeekRankingForm
+    ].map(i => ({ ...i}));
   }
 
   getPreviousWeekPosition(managerName: string) {
