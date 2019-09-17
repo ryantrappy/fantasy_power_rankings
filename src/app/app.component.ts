@@ -141,9 +141,18 @@ export class AppComponent implements OnInit{
     this.leagueConfig = Object.assign({}, this.leagueConfigForm);
     this.configsArray[0] = this.leagueConfig;
     this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
-    this.storageService.setPreviousWeekFromStorage(this.previousWeekRankingForm, this.leagueConfig.leagueName);
     this.storageService.setLeagueConfigs(this.configsArray);
     this.getRankingImage();
+  }
+  saveAsPreviousWeek() {
+    this.storageService.setPreviousWeekFromStorage(this.currentWeekRankingForm, this.configsArray[0].leagueName);
+    this.previousWeekRanking = [
+      ...this.currentWeekRankingForm
+    ].map(i => ({ ...i}));
+    this.previousWeekRankingForm = [
+      ...this.currentWeekRankingForm
+    ].map(i => ({ ...i}));
+    this.regenerateRankings();
   }
   getPreviousWeekPosition(managerName: string) {
     return this.previousWeekRanking.findIndex ((element) => {
