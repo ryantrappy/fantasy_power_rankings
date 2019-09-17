@@ -2,10 +2,12 @@
 <div id='powerRanking'>
   <table id='powerRankingTable'>
     <tr>
-      <th colspan='5'><h3 id=rankingTitle>Title Goes Here</h3></th>
+      <th colspan='5'><h3 id=rankingTitle>{{leagueConfig.rankingsTitle}}</h3></th>
     </tr>
-    <tr id=introduction>
-      <th colspan='5' id=introductionRow></th>
+    <tr id=introduction [hidden]="leagueConfig.introduction > 0">
+      <th colspan='5' id=introductionRow>
+        {{leagueConfig.introduction}}
+      </th>
     </tr>
     <tr>
       <td class='center'>
