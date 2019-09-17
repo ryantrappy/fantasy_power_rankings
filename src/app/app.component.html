@@ -27,9 +27,10 @@
       </tr>
     </ng-container>
   </table>
-
+    <button class="button" type="submit" (click)="addTeam()">Add Team</button>
     <button class="button" type="submit" (click)="regenerateRankings()">Generate Rankings</button>
 </div>
+
 <div class="split right">
   <div id='powerRanking'>
     <table id='powerRankingTable'>
@@ -56,7 +57,7 @@
           <td class='teamPicture' style='width:25px'></td>
           <td style='width:20%;'>
             <div class='manager-name'>{{rankingObject.teamName}}</div>
-            <div class='team-record'>{{rankingObject.managerName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{rankingObject.record}}</div>
+            <div class='team-record'>{{rankingObject.managerName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{getRecord(rankingObject)}}</div>
           </td>
           <td class='center'>
             <div class='delta-div'>

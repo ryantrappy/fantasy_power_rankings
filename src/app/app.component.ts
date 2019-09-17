@@ -2,6 +2,7 @@ import {Component, Injectable, OnInit} from '@angular/core';
 import * as html2canvas from "./libraries/html2canvas.min.js"
 import * as fileSaver from "./libraries/FileSaver.min.js"
 import { StorageService} from "./storage.service";
+import {TeamRanking} from "./TeamRanking";
 
 
 @Component({
@@ -100,14 +101,33 @@ export class AppComponent implements OnInit{
       "managerName": "Joe Loser1"
     }
   ];
-  currentWeekRankingForm: Array<TeamRanking> = this.currentWeekRanking;
-  previousWeekRankingForm: Array<TeamRanking> = this.previousWeekRanking;
+  currentWeekRankingForm: Array<TeamRanking>;
+  previousWeekRankingForm: Array<TeamRanking>;
   leagueConfig: LeagueConfig;
   leagueConfigForm: LeagueConfig;
   configsArray: Array<LeagueConfig> = [];
 
   ngOnInit(): void {
     this.getRankingImage();
+    this.currentWeekRankingForm = [
+      ...this.currentWeekRanking
+    ].map(i => ({ ...i}));
+    this.previousWeekRankingForm = [
+      ...this.previousWeekRanking
+    ].map(i => ({ ...i}));
+  }
+  addTeam() {
+    const teamRanking = new TeamRanking();
+    console.log(teamRanking);
+    this.currentWeekRankingForm.push(teamRanking);
+    console.log(this.currentWeekRankingForm);
+  }
+  getRecord(teamRanking: TeamRanking) {
+    let result = teamRanking.wins + '-' + teamRanking.loss;
+    if (teamRanking.ties !== 0) {
+      result = result + '-' + teamRanking.ties
+    }
+    return result;
   }
   regenerateRankings() {
     // Deep clone both arrays so that mutations don't affect table
@@ -123,6 +143,7 @@ export class AppComponent implements OnInit{
     this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
     this.storageService.setPreviousWeekFromStorage(this.previousWeekRankingForm, this.leagueConfig.leagueName);
     this.storageService.setLeagueConfigs(this.configsArray);
+    this.getRankingImage();
   }
   getPreviousWeekPosition(managerName: string) {
     return this.previousWeekRanking.findIndex ((element) => {
@@ -164,6 +185,10 @@ export class AppComponent implements OnInit{
     }
   };
   getRankingImage() {
+    const previousStyle = document.getElementById('images-styles');
+    if(previousStyle) {
+      previousStyle.remove();
+    }
     let circleWidth = 60;
     let circleCount = 0;
     let circleMid = this.currentWeekRanking.length / 2;
@@ -191,6 +216,7 @@ export class AppComponent implements OnInit{
 
     const head = document.getElementsByTagName('head')[0];
     const style = document.createElement('style');
+    style.id = 'images-styles';
     style.appendChild(document.createTextNode(resultString));
     head.appendChild(style);
   }

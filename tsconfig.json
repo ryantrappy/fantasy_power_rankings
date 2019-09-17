@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "/fantasy_power_rankings/",
+    "baseUrl": "/",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
