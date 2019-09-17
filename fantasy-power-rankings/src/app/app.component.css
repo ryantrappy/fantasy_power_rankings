@@ -35,6 +35,13 @@
   border-radius: 50%;
 }
 
+#rankingIntroduction {
+  width: 50%;
+  height: 10em;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
 #powerRanking {
   width:650px;
   position:relative;

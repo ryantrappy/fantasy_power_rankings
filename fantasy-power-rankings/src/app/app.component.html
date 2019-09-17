@@ -3,8 +3,20 @@
       <label for="leagueName">
         League Name
       </label>
-      <input id="leagueName" type="text" [(ngModel)]="leagueConfig.leagueName">
+      <input id="leagueName" type="text" [(ngModel)]="leagueConfigForm.leagueName">
     </ng-container>
+  <br>
+  <ng-container>
+    <label for="rankingsTitle">
+      Rankings Title
+    </label>
+    <input id="rankingsTitle" type="text" [(ngModel)]="leagueConfigForm.rankingsTitle">
+  </ng-container>
+  <br>
+  <ng-container>
+    <span>Rankings Introduction</span>
+    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>
+  </ng-container>
   <table>
     <td>Team Name</td>
     <td>Comments</td>

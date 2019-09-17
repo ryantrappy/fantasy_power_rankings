@@ -29,6 +29,7 @@ export class AppComponent implements OnInit{
       this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
     }
     this.leagueConfig = this.configsArray[0];
+    this.leagueConfigForm = Object.assign({}, this.leagueConfig)
   }
   title = 'fantasy-power-rankings';
   currentWeekRanking: Array<TeamRanking> = [
@@ -102,15 +103,13 @@ export class AppComponent implements OnInit{
   currentWeekRankingForm: Array<TeamRanking> = this.currentWeekRanking;
   previousWeekRankingForm: Array<TeamRanking> = this.previousWeekRanking;
   leagueConfig: LeagueConfig;
+  leagueConfigForm: LeagueConfig;
   configsArray: Array<LeagueConfig> = [];
 
   ngOnInit(): void {
     this.getRankingImage();
   }
   regenerateRankings() {
-    this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
-    this.storageService.setPreviousWeekFromStorage(this.previousWeekRankingForm, this.leagueConfig.leagueName);
-    this.storageService.setLeagueConfigs(this.configsArray);
     // Deep clone both arrays so that mutations don't affect table
     this.currentWeekRanking = [
       ...this.currentWeekRankingForm
@@ -118,8 +117,13 @@ export class AppComponent implements OnInit{
     this.previousWeekRanking = [
       ...this.previousWeekRankingForm
     ].map(i => ({ ...i}));
+    // Clone league config
+    this.leagueConfig = Object.assign({}, this.leagueConfigForm);
+    this.configsArray[0] = this.leagueConfig;
+    this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
+    this.storageService.setPreviousWeekFromStorage(this.previousWeekRankingForm, this.leagueConfig.leagueName);
+    this.storageService.setLeagueConfigs(this.configsArray);
   }
-
   getPreviousWeekPosition(managerName: string) {
     return this.previousWeekRanking.findIndex ((element) => {
       return element.managerName === managerName;
