@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "teamName": "Test Winner",
+    "description": "They did their best this week but sometimes that just is good enough.",
+    "record": "1-0",
+    "managerName": "Joe Winner"
+  },
+  {
+    "teamName": "Test Loser",
+    "description": "They did their best this week but sometimes that just is not good enough.",
+    "record": "0-1",
+    "managerName": "Joe Loser"
+  }
+]

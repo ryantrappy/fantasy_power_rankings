@@ -2,13 +2,25 @@
   {
 	"teamName": "Test Winner",
 	"description": "They did their best this week but sometimes that just is good enough.",
-	"record": "1-0",
+	"record": "2-0",
 	"managerName": "Joe Winner"
   },
   {
 	"teamName": "Test Loser",
 	"description": "They did their best this week but sometimes that just is not good enough.",
-	"record": "0-1",
+	"record": "0-2",
 	"managerName": "Joe Loser"
-  }
+  },
+	{
+		"teamName": "Test Winner1",
+		"description": "They did their best this week but sometimes that just is good enough.",
+		"record": "2-0",
+		"managerName": "Joe Winner1"
+	},
+	{
+		"teamName": "Test Loser",
+		"description": "They did their best this week but sometimes that just is not good enough.",
+		"record": "0-2",
+		"managerName": "Joe Loser1"
+	}
 ]
