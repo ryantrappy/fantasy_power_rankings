@@ -19,11 +19,19 @@
   </ng-container>
   <table>
     <td>Team Name</td>
+    <td>Manager Name</td>
     <td>Comments</td>
+    <td>Wins</td>
+    <td>Losses</td>
+    <td>Ties</td>
     <ng-container *ngFor="let rankingObject of currentWeekRankingForm; index as i ">
       <tr>
         <td><input id="teamName" type="text" [(ngModel)]="currentWeekRankingForm[i].teamName"></td>
+        <td><input id="managerName" type="text" [(ngModel)]="currentWeekRankingForm[i].managerName"></td>
         <td><input id="description" type="text" [(ngModel)]="currentWeekRankingForm[i].description"></td>
+        <td><input id="wins" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].wins"></td>
+        <td><input id="losses" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].loss"></td>
+        <td><input id="ties" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].ties"></td>
       </tr>
     </ng-container>
   </table>
