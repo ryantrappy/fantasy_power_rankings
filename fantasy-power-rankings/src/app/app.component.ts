@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import * as html2canvas from "./libraries/html2canvas.min.js"
+import * as fileSaver from "./libraries/FileSaver.min.js"
 
 @Component({
   selector: 'app-root',
@@ -94,21 +96,6 @@ export class AppComponent implements OnInit{
     return (lastWeeksRanking) ? 'Last Week: ' + lastWeeksRanking : ''
   }
 
-   generateTeamRow(ranking: number, lastWeeksRanking: number, rankingObject: TeamRanking) {
-    let delta = lastWeeksRanking ? ranking - lastWeeksRanking : 0;
-    let lastWeekPositionString = (lastWeeksRanking) ? 'Last Week: ' + lastWeeksRanking : '';
-    let teamName = "<div class='manager-name'>" + rankingObject.teamName + "</div>";
-    return "<tr class='rank'> <td>" +
-      "<div class='ranking'>" + ranking + "</div>" +
-      "</td><td class='teamPicture' style='width:25px'></td>" +
-      "<td style='width:20%;'>" + teamName + "<div class='team-record'>" + rankingObject.managerName + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+ rankingObject.record +
-      "</div></td>" +
-      "<td class='center'><div class='delta-div'><div class='" + this.getDeltaSymbolClass (delta) + "'></div>" +
-      "<div class='delta " + this.getDeltaClass (delta) + "'>" + this.getDeltaString (delta) + "</div></div" +
-      "<div class='last-weeks-position'>" + lastWeekPositionString + "</div></td>" +
-      "<td class='center' style='width: 50%';>" + rankingObject.description + "</td></tr>";
-  };
-
   getDeltaSymbolClass (delta) {
     if(delta < 0) {
       return "up";
@@ -170,35 +157,18 @@ export class AppComponent implements OnInit{
     head.appendChild(style);
   }
 
-  //
    generateScreenshot() {
-    // html2canvas(document.getElementById("powerRanking"),
-    //   {width: "fit-content", allowTaint: true}).then(function(canvas) {
-    //   canvas.toBlob((blob) => {
-    //     saveAs(blob, "rankings.png");
-    //     window.alert('Saved Power Rankings');
-    //   });
-    // });
-  }
-  generateTable() {
-    const outerDiv = document.getElementById("powerRanking")
-    // Set config items
-    document.getElementById("rankingTitle").innerText = this.leagueConfig.rankingsTitle;
-    // If there is introductory text, display it
-    if(this.leagueConfig.introduction && this.leagueConfig.introduction.length > 0) {
-      document.getElementById("introductionRow").innerText = this.leagueConfig.introduction;
-    } else {
-      // $("#introduction").css("display","none");
-    }
-    // Generate Table
-    let tableHTML;
-    for (let i = 0; i < this.currentWeekRanking.length; i++) {
-      const previousRanking = this.previousWeekRanking.findIndex ((element) => {
-        return element.managerName === this.currentWeekRanking[i].managerName;
+    html2canvas(document.getElementById("powerRanking"),
+      {
+        width: "fit-content",
+        allowTaint: true,
+        scale: 2,
+        dpi: 300
+      }).then(function(canvas) {
+      canvas.toBlob((blob) => {
+        fileSaver.saveAs(blob, "rankings.png");
+        window.alert('Saved Power Rankings');
       });
-      const rowHTML = this.generateTeamRow (i + 1, previousRanking + 1, this.currentWeekRanking[i]);
-      // tableElement.append(rowHTML);
-    }
- }
-
+    });
+  }
 }

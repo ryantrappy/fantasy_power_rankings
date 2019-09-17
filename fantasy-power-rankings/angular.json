@@ -26,7 +26,12 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/app/libraries/html2canvas.min.js",
+              "src/app/libraries/Blob.js",
+              "src/app/libraries/canvas-toBlob.js",
+              "src/app/libraries/FileSaver.min.js"
+            ]
           },
           "configurations": {
             "production": {
