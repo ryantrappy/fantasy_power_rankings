@@ -1,5 +1,7 @@
 ## Use Instructions
 
+https://ryantrappy.github.io/fantasy_power_rankings/
+
 ** This requires python 3 to run **
 
 The current_power_rankings JSON order is the current order that the teams are ranked and previous_power_rankings JSON is the previous week's information.
