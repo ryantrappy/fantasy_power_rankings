@@ -116,7 +116,12 @@
 
 			const generateScreenshot = function() {
 				html2canvas(document.getElementById("powerRanking"),
-					{width: "fit-content", allowTaint: true}).then(function(canvas) {
+					{
+						width: "fit-content",
+						allowTaint: true,
+						scale: 2,
+						dpi: 300
+					}).then(function(canvas) {
 					canvas.toBlob((blob) => {
 						saveAs(blob, "rankings.png");
 						window.alert('Saved Power Rankings');
