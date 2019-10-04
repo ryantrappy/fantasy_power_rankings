@@ -1,22 +1,41 @@
 <div class="split left">
-    <ng-container>
-      <label for="leagueName">
-        League Name
-      </label>
-      <input id="leagueName" type="text" [(ngModel)]="leagueConfigForm.leagueName">
-    </ng-container>
+  <mat-form-field>
+    <mat-label>Select League</mat-label>
+    <mat-select [(value)]="leagueConfig">
+      <mat-option *ngFor="let config of configsArray" [value]="config">
+        {{config.leagueName}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br><br>
+  <mat-form-field>
+    <mat-label>League Name</mat-label>
+    <textarea matInput
+              cdkTextareaAutosize
+							#autosize="cdkTextareaAutosize"
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="5" [(ngModel)]="leagueConfigForm.leagueName"></textarea>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Rankings Title</mat-label>
+    <textarea matInput
+              cdkTextareaAutosize
+							#autosize="cdkTextareaAutosize"
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="5" [(ngModel)]="leagueConfigForm.rankingsTitle"></textarea>
+  </mat-form-field>
   <br>
-  <ng-container>
-    <label for="rankingsTitle">
-      Rankings Title
-    </label>
-    <input id="rankingsTitle" type="text" [(ngModel)]="leagueConfigForm.rankingsTitle">
-  </ng-container>
-  <br>
-  <ng-container>
-    <span>Rankings Introduction</span>
-    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>
-  </ng-container>
+  <mat-form-field class="introText">
+    <mat-label>Rankings Introduction</mat-label>
+    <textarea matInput
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="5" class="introText" style="width: 100%" [(ngModel)]="leagueConfigForm.introduction"></textarea>
+  </mat-form-field>
+<!--  <ng-container>-->
+<!--    <span>Rankings Introduction</span>-->
+<!--    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>-->
+<!--  </ng-container>-->
   <table>
     <td>Team Name</td>
     <td>Manager Name</td>
@@ -35,9 +54,9 @@
       </tr>
     </ng-container>
   </table>
-    <button class="button" type="submit" (click)="addTeam()">Add Team</button>
-    <button class="button" type="submit" (click)="regenerateRankings()">Generate Rankings</button>
-    <button class="button" type="submit" (click)="saveAsPreviousWeek()">Save Rankings as Previous Week</button>
+    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="addTeam()">Add Team</button>
+    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="regenerateRankings()">Generate Rankings</button>
+    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="saveAsPreviousWeek()">Save Rankings as Previous Week</button>
 </div>
 
 <div class="split right">
