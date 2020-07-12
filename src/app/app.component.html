@@ -116,7 +116,7 @@
       <tr>
         <th colspan='5'><h3 id=rankingTitle>{{leagueConfig.rankingsTitle}}</h3></th>
       </tr>
-      <tr id=introduction [hidden]="!leagueConfig.introduction.length > 0">
+      <tr id=introduction [hidden]="!(leagueConfig.introduction.length > 0)">
         <th colspan='5' id=introductionRow>
           {{leagueConfig.introduction}}
         </th>
