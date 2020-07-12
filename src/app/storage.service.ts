@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TeamRanking} from "./TeamRanking";
+import {TeamRanking} from './TeamRanking';
 
 @Injectable({
   providedIn: 'root'
@@ -12,16 +12,16 @@ export class StorageService {
     return JSON.parse(localStorage.getItem('configs'));
   }
   setLeagueConfigs(leagueConfigArray: Array<LeagueConfig>) {
-    localStorage.setItem('configs', JSON.stringify(leagueConfigArray))
+    localStorage.setItem('configs', JSON.stringify(leagueConfigArray));
   }
 
-  getCurrentWeekFromStorage(leagueName: string):  Array<TeamRanking> {
+  getCurrentWeekFromStorage(leagueName: string): Array<TeamRanking> {
     return JSON.parse(localStorage.getItem('cur-' + leagueName));
   }
   setCurrentWeekFromStorage(currentWeekObject: Array<TeamRanking>, leagueName: string) {
     localStorage.setItem('cur-' + leagueName, JSON.stringify(currentWeekObject));
   }
-  getPreviousWeekFromStorage(leagueName: string):  Array<TeamRanking> {
+  getPreviousWeekFromStorage(leagueName: string): Array<TeamRanking> {
     return JSON.parse(localStorage.getItem('prev-' + leagueName));
   }
   setPreviousWeekFromStorage(currentWeekObject: Array<TeamRanking>, leagueName: string) {

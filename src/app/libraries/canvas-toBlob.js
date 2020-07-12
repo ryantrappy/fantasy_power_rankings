@@ -1,7 +1,7 @@
 /* canvas-toBlob.js
  * A canvas.toBlob() implementation.
  * 2016-05-26
- * 
+ *
  * By Eli Grey, http://eligrey.com and Devin Samarin, https://github.com/eboyjr
  * License: MIT
  *   See https://github.com/eligrey/canvas-toBlob.js/blob/master/LICENSE.md
@@ -37,7 +37,7 @@
             ;
             while (len--) {
                 code = base64.charCodeAt(i++);
-                rank = base64_ranks[code-43];
+                rank = base64_ranks[code - 43];
                 if (rank !== 255 && rank !== undef) {
                     last[1] = last[0];
                     last[0] = code;
@@ -67,11 +67,11 @@
             , -1, -1,  0, -1, -1, -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9
             , 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
             , -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35
-            , 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
+            , 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
         ]);
     }
     if (HTMLCanvasElement && (!canvas_proto.toBlob || !canvas_proto.toBlobHD)) {
-        if (!canvas_proto.toBlob)
+        if (!canvas_proto.toBlob) {
         canvas_proto.toBlob = function(callback, type /*, ...args*/) {
               if (!type) {
                 type = "image/png";
@@ -82,8 +82,8 @@
                 callback(this.msToBlob());
                 return;
             }
-    
-            var
+
+              var
                   args = Array.prototype.slice.call(arguments, 1)
                 , dataURI = this[to_data_url].apply(this, args)
                 , header_end = dataURI.indexOf(",")
@@ -91,9 +91,9 @@
                 , is_base64 = is_base64_regex.test(dataURI.substring(0, header_end))
                 , blob
             ;
-            if (Blob.fake) {
+              if (Blob.fake) {
                 // no reason to decode a data: URI that's just going to become a data URI again
-                blob = new Blob
+                blob = new Blob;
                 if (is_base64) {
                     blob.encoding = "base64";
                 } else {
@@ -108,16 +108,17 @@
                     blob = new Blob([decodeURIComponent(data)], {type: type});
                 }
             }
-            callback(blob);
+              callback(blob);
         };
-    
+        }
+
         if (!canvas_proto.toBlobHD && canvas_proto.toDataURLHD) {
             canvas_proto.toBlobHD = function() {
                 to_data_url = "toDataURLHD";
                 var blob = this.toBlob();
                 to_data_url = "toDataURL";
                 return blob;
-            }
+            };
         } else {
             canvas_proto.toBlobHD = canvas_proto.toBlob;
         }

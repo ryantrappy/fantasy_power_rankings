@@ -36,24 +36,75 @@
 <!--    <span>Rankings Introduction</span>-->
 <!--    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>-->
 <!--  </ng-container>-->
-  <table>
-    <td>Team Name</td>
-    <td>Manager Name</td>
-    <td>Comments</td>
-    <td>Wins</td>
-    <td>Losses</td>
-    <td>Ties</td>
-    <ng-container *ngFor="let rankingObject of currentWeekRankingForm; index as i ">
-      <tr>
-        <td><input id="teamName" type="text" [(ngModel)]="currentWeekRankingForm[i].teamName"></td>
-        <td><input id="managerName" type="text" [(ngModel)]="currentWeekRankingForm[i].managerName"></td>
-        <td><input id="description" type="text" [(ngModel)]="currentWeekRankingForm[i].description"></td>
-        <td><input id="wins" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].wins"></td>
-        <td><input id="losses" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].loss"></td>
-        <td><input id="ties" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].ties"></td>
-      </tr>
+  <mat-table [dataSource]="currentWeekRankingForm" class="mat-elevation-z8" cdkDropList [cdkDropListData]="currentWeekRankingForm"
+             (cdkDropListDropped)="drop($event);">
+    <ng-container matColumnDef="teamName" width="5">
+      <th mat-header-cell *matHeaderCellDef> Team Name </th>
+      <td mat-cell *matCellDef="let team">
+<!--        <mat-form-field>-->
+<!--          <input matInput placeholder="Favorite food" value="Team Name" [(ngModel)]="team.teamName">-->
+<!--        </mat-form-field>-->
+
+<!--        <mat-form-field>-->
+<!--          <mat-label>Team Name</mat-label>-->
+<!--          <textarea matInput-->
+<!--                    cdkTextareaAutosize-->
+<!--										#autosize="cdkTextareaAutosize"-->
+<!--                    cdkAutosizeMinRows="1"-->
+<!--                    cdkAutosizeMaxRows="5" [(ngModel)]="team.teamName"></textarea>-->
+<!--        </mat-form-field>-->
+
+        <input type="text" [(ngModel)]="team.teamName">
+      </td>
     </ng-container>
-  </table>
+
+    <ng-container matColumnDef="managerName">
+      <th mat-header-cell *matHeaderCellDef> Manager Name </th>
+      <td mat-cell *matCellDef="let team"> {{team.managerName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let team"> {{team.description}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="wins">
+      <th mat-header-cell *matHeaderCellDef> Wins </th>
+      <td mat-cell *matCellDef="let team"> {{team.wins}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="losses">
+      <th mat-header-cell *matHeaderCellDef> Losses </th>
+      <td mat-cell *matCellDef="let team"> {{team.loss}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ties">
+      <th mat-header-cell *matHeaderCellDef> Ties </th>
+      <td mat-cell *matCellDef="let team"> {{team.ties}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" cdkDragLockAxis="y" cdkDrag [cdkDragData]="row"></tr>
+  </mat-table>
+<!--  <table>-->
+<!--    <td>Team Name</td>-->
+<!--    <td>Manager Name</td>-->
+<!--    <td>Comments</td>-->
+<!--    <td>Wins</td>-->
+<!--    <td>Losses</td>-->
+<!--    <td>Ties</td>-->
+<!--    <ng-container *ngFor="let rankingObject of currentWeekRankingForm; index as i ">-->
+<!--      <tr>-->
+<!--        <td><input id="teamName" type="text" [(ngModel)]="currentWeekRankingForm[i].teamName"></td>-->
+<!--        <td><input id="managerName" type="text" [(ngModel)]="currentWeekRankingForm[i].managerName"></td>-->
+<!--        <td><input id="description" type="text" [(ngModel)]="currentWeekRankingForm[i].description"></td>-->
+<!--        <td><input id="wins" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].wins"></td>-->
+<!--        <td><input id="losses" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].loss"></td>-->
+<!--        <td><input id="ties" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].ties"></td>-->
+<!--      </tr>-->
+<!--    </ng-container>-->
+<!--  </table>-->
+
     <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="addTeam()">Add Team</button>
     <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="regenerateRankings()">Generate Rankings</button>
     <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="saveAsPreviousWeek()">Save Rankings as Previous Week</button>
@@ -65,7 +116,7 @@
       <tr>
         <th colspan='5'><h3 id=rankingTitle>{{leagueConfig.rankingsTitle}}</h3></th>
       </tr>
-      <tr id=introduction [hidden]="leagueConfig.introduction.length > 0">
+      <tr id=introduction [hidden]="!leagueConfig.introduction.length > 0">
         <th colspan='5' id=introductionRow>
           {{leagueConfig.introduction}}
         </th>
@@ -99,7 +150,7 @@
   </div>
   <div style='height: 5vh;'></div>
   <div style='width: 100%;'>
-    <button (click)="generateScreenshot()" class="download-button">Download Rankings Image</button>
+    <button mat-raised-button color="primary" (click)="generateScreenshot()" class="download-button">Download Rankings Image</button>
   </div>
 </div>
 

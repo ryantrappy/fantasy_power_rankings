@@ -18,6 +18,10 @@ mat-form-field {
   margin-right: 8px;
 }
 
+.mat-header-cell:first-child,.mat-cell:first-child{
+  flex:5%;
+}
+
 .introText {
   min-width: 33vw;
   max-width: 40vw;
@@ -221,3 +225,4 @@ tr.rank td:nth-child(5) {
   margin: 0 auto;
   display: block;
 }
+
