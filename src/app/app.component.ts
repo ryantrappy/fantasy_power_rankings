@@ -14,7 +14,7 @@ import {MatTable} from '@angular/material/table';
 })
 export class AppComponent implements OnInit {
 
-  @ViewChild(MatTable, { static: false }) table: MatTable<any>;
+  @ViewChild(MatTable) table: MatTable<any>;
 
   constructor(private storageService: StorageService) {
     this.configsArray = storageService.getLeagueConfigs();
