@@ -131,5 +131,8 @@
       }
     }
   },
-  "defaultProject": "fantasy-power-rankings"
+  "defaultProject": "fantasy-power-rankings",
+  "cli": {
+    "analytics": "28dedebf-551f-4e55-a076-1d9e3a31b199"
+  }
 }
