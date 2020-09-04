@@ -9,20 +9,28 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {HttpClientModule} from '@angular/common/http';
+import {LoginDialogComponent} from './login/login.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginDialogComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
     BrowserAnimationsModule,
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
+    MatToolbarModule,
     MatTableModule,
+    MatDialogModule,
     DragDropModule
   ],
   providers: [],

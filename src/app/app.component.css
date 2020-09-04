@@ -4,10 +4,14 @@
   width: 50%;
   position: fixed;
   z-index: 1;
-  top: 0;
+  top: 64px;
   overflow-x: hidden;
   padding-top: 20px;
 }
+.spacer {
+  flex: 1 1 auto;
+}
+
 
 .submit-button button,
 .submit-button{

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {TeamRanking} from './TeamRanking';
+import { LeagueConfig } from './LeagueConfig';
 
 @Injectable({
   providedIn: 'root'

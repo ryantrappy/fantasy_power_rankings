@@ -9,6 +9,7 @@
     "experimentalDecorators": true,
     "module": "es2020",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "importHelpers": true,
     "target": "es5",
     "typeRoots": [

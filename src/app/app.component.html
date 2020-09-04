@@ -1,12 +1,40 @@
-<div class="split left">
+<mat-toolbar color="primary">
+  <span>Fantasy Power Rankings Generator</span>
+  <span class="spacer"></span>
+  <span style="padding-right: 5px">Hello
+  <span *ngIf="false">Name</span>
+  <span>Guest</span>
+  </span>
+  <button class="button submit-button" mat-raised-button color="secondary" (click)="openDialog()">Login</button>
+</mat-toolbar>
+<div class="split left" *ngIf="leagueConfigForm !== undefined">
+<!--  <mat-form-field>-->
+<!--    <mat-label>Select League</mat-label>-->
+<!--    <mat-select [(value)]="leagueConfig">-->
+<!--      <mat-option *ngFor="let config of configsArray" [value]="config">-->
+<!--        {{config.leagueName}}-->
+<!--      </mat-option>-->
+<!--    </mat-select>-->
+<!--  </mat-form-field>-->
   <mat-form-field>
-    <mat-label>Select League</mat-label>
-    <mat-select [(value)]="leagueConfig">
-      <mat-option *ngFor="let config of configsArray" [value]="config">
-        {{config.leagueName}}
+    <mat-label>Select Week</mat-label>
+    <mat-select [(value)]="currentWeek">
+      <mat-option *ngFor="let num of weeks" [value]="num">
+        {{num}}
       </mat-option>
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Select Yeah</mat-label>
+    <textarea matInput
+              type="number"
+              cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize"
+              [(ngModel)]="currentYear"></textarea>
+  </mat-form-field>
+
+
   <br><br>
   <mat-form-field>
     <mat-label>League Name</mat-label>
@@ -14,7 +42,7 @@
               cdkTextareaAutosize
 							#autosize="cdkTextareaAutosize"
               cdkAutosizeMinRows="1"
-              cdkAutosizeMaxRows="5" [(ngModel)]="leagueConfigForm.leagueName"></textarea>
+              cdkAutosizeMaxRows="5" [(ngModel)]="leagueConfigForm.leagueId"></textarea>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Rankings Title</mat-label>
@@ -36,24 +64,11 @@
 <!--    <span>Rankings Introduction</span>-->
 <!--    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>-->
 <!--  </ng-container>-->
-  <mat-table [dataSource]="currentWeekRankingForm" class="mat-elevation-z8" cdkDropList [cdkDropListData]="currentWeekRankingForm"
+  <mat-table [dataSource]="leagueConfigForm.teams" class="mat-elevation-z8" cdkDropList [cdkDropListData]="currentWeekRankingForm"
              (cdkDropListDropped)="drop($event);">
     <ng-container matColumnDef="teamName" width="5">
       <th mat-header-cell *matHeaderCellDef> Team Name </th>
       <td mat-cell *matCellDef="let team">
-<!--        <mat-form-field>-->
-<!--          <input matInput placeholder="Favorite food" value="Team Name" [(ngModel)]="team.teamName">-->
-<!--        </mat-form-field>-->
-
-<!--        <mat-form-field>-->
-<!--          <mat-label>Team Name</mat-label>-->
-<!--          <textarea matInput-->
-<!--                    cdkTextareaAutosize-->
-<!--										#autosize="cdkTextareaAutosize"-->
-<!--                    cdkAutosizeMinRows="1"-->
-<!--                    cdkAutosizeMaxRows="5" [(ngModel)]="team.teamName"></textarea>-->
-<!--        </mat-form-field>-->
-
         <input type="text" [(ngModel)]="team.teamName">
       </td>
     </ng-container>
@@ -86,24 +101,6 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" cdkDragLockAxis="y" cdkDrag [cdkDragData]="row"></tr>
   </mat-table>
-<!--  <table>-->
-<!--    <td>Team Name</td>-->
-<!--    <td>Manager Name</td>-->
-<!--    <td>Comments</td>-->
-<!--    <td>Wins</td>-->
-<!--    <td>Losses</td>-->
-<!--    <td>Ties</td>-->
-<!--    <ng-container *ngFor="let rankingObject of currentWeekRankingForm; index as i ">-->
-<!--      <tr>-->
-<!--        <td><input id="teamName" type="text" [(ngModel)]="currentWeekRankingForm[i].teamName"></td>-->
-<!--        <td><input id="managerName" type="text" [(ngModel)]="currentWeekRankingForm[i].managerName"></td>-->
-<!--        <td><input id="description" type="text" [(ngModel)]="currentWeekRankingForm[i].description"></td>-->
-<!--        <td><input id="wins" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].wins"></td>-->
-<!--        <td><input id="losses" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].loss"></td>-->
-<!--        <td><input id="ties" type="number" min="0" [(ngModel)]="currentWeekRankingForm[i].ties"></td>-->
-<!--      </tr>-->
-<!--    </ng-container>-->
-<!--  </table>-->
 
     <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="addTeam()">Add Team</button>
     <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="regenerateRankings()">Generate Rankings</button>
@@ -111,12 +108,12 @@
 </div>
 
 <div class="split right">
-  <div id='powerRanking'>
+  <div id='powerRanking' *ngIf="leagueConfig !== undefined">
     <table id='powerRankingTable'>
       <tr>
         <th colspan='5'><h3 id=rankingTitle>{{leagueConfig.rankingsTitle}}</h3></th>
       </tr>
-      <tr id=introduction [hidden]="!(leagueConfig.introduction.length > 0)">
+      <tr id=introduction [hidden]="!leagueConfig.introduction || !(leagueConfig.introduction.length > 0)">
         <th colspan='5' id=introductionRow>
           {{leagueConfig.introduction}}
         </th>

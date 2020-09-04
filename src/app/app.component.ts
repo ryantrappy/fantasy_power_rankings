@@ -3,8 +3,13 @@ import * as html2canvas from './libraries/html2canvas.min.js';
 import * as fileSaver from './libraries/FileSaver.min.js';
 import { StorageService} from './storage.service';
 import {TeamRanking} from './TeamRanking';
+import {LeagueConfig} from './LeagueConfig';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatTable} from '@angular/material/table';
+import {RankingsService} from './services/rankings.service';
+import * as sampleData from './data/LeagueConfigSample';
+import {MatDialog} from '@angular/material/dialog';
+import {LoginDialogComponent} from './login/login.component';
 
 
 @Component({
@@ -16,95 +21,34 @@ export class AppComponent implements OnInit {
 
   @ViewChild(MatTable) table: MatTable<any>;
 
-  constructor(private storageService: StorageService) {
-    this.configsArray = storageService.getLeagueConfigs();
-    if (!this.configsArray || this.configsArray.length === 0) {
-      this.configsArray = [
-        {
-          rankingsTitle: 'Rankings Title',
-          introduction: 'This is introduction text if the user wants to preface the rankings with some text.' +
-            ' The text can be an introduction to the year or anything else.',
-          leagueName: 'test'
-        }
-      ];
-    } else {
-      this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-      this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-      this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-      this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-    }
-    this.leagueConfig = this.configsArray[0];
-    this.leagueConfigForm = Object.assign({}, this.leagueConfig);
+  constructor(private storageService: StorageService,
+              private rankingsService: RankingsService,
+              public dialog: MatDialog) {
+    this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
+      this.leagueConfigForm = data[0];
+      // this.configsArray = storageService.getLeagueConfigs();
+      if (!this.configsArray || this.configsArray.length === 0) {
+        this.configsArray = [];
+        // @ts-ignore
+        this.configsArray.push(sampleData);
+      } else {
+        this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+        this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+        this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+        this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+      }
+      this.leagueConfig = this.configsArray[0];
+      if (!this.leagueConfigForm) {
+        // this.leagueConfigForm = Object.assign({}, this.leagueConfig);
+      }
+    });
   }
   title = 'fantasy-power-rankings';
-  currentWeekRanking: Array<TeamRanking> = [
-    {
-      teamName: 'Test Winner',
-      description: 'They did their best this week but sometimes that just is good enough.',
-      wins: 1,
-      loss: 0,
-      ties: 0,
-      managerName: 'Joe Winner'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser1'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser2'
-    }
-  ];
-  previousWeekRanking: Array<TeamRanking> = [
-    {
-      teamName: 'Test Winner',
-      description: 'They did their best this week but sometimes that just is good enough.',
-      wins: 1,
-      loss: 0,
-      ties: 0,
-      managerName: 'Joe Winner'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser2'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser'
-    },
-    {
-      teamName: 'Test Loser',
-      description: 'They did their best this week but sometimes that just is not good enough.',
-      wins: 0,
-      loss: 1,
-      ties: 0,
-      managerName: 'Joe Loser1'
-    }
-  ];
+  currentYear = new Date().getFullYear();
+  weeks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+  currentWeek = 0;
+  currentWeekRanking: Array<TeamRanking> = [];
+  previousWeekRanking: Array<TeamRanking> = [];
   currentWeekRankingForm: Array<TeamRanking>;
   previousWeekRankingForm: Array<TeamRanking>;
   leagueConfig: LeagueConfig;
@@ -114,19 +58,39 @@ export class AppComponent implements OnInit {
   trackById: TrackByFunction<number>;
 
   ngOnInit(): void {
-    this.getRankingImage();
-    if (this.currentWeekRanking) {
-      this.currentWeekRankingForm = [
-        ...this.currentWeekRanking
-      ].map(i => ({ ...i}));
-    }
+    this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
+      console.log(data[0]);
+      this.leagueConfigForm = data[0];
 
-    if (this.previousWeekRanking) {
-      this.previousWeekRankingForm = [
-        ...this.previousWeekRanking
-      ].map(i => ({ ...i}));
-    }
+      this.getRankingImage();
+      if (this.currentWeekRanking) {
+        this.currentWeekRankingForm = [
+          ...this.currentWeekRanking
+        ].map(i => ({ ...i}));
+      }
+
+      if (this.previousWeekRanking) {
+        this.previousWeekRankingForm = [
+          ...this.previousWeekRanking
+        ].map(i => ({ ...i}));
+      }
+
+    });
+
+
   }
+  openDialog(): void {
+    const dialogRef = this.dialog.open(LoginDialogComponent, {
+      width: '250px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+
   addTeam() {
     const teamRanking = new TeamRanking();
     console.log(teamRanking);
@@ -153,11 +117,11 @@ export class AppComponent implements OnInit {
     }
 
     // Clone league config
-    this.leagueConfig = Object.assign({}, this.leagueConfigForm);
-    this.configsArray[0] = this.leagueConfig;
-    this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
-    this.storageService.setLeagueConfigs(this.configsArray);
-    this.getRankingImage();
+    // this.leagueConfig = Object.assign({}, this.leagueConfigForm);
+    // this.configsArray[0] = this.leagueConfig;
+    // this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
+    // this.storageService.setLeagueConfigs(this.configsArray);
+    // this.getRankingImage();
   }
 
   drop(event: CdkDragDrop<Array<TeamRanking>>) {
