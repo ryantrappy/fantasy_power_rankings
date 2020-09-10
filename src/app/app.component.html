@@ -2,10 +2,11 @@
   <span>Fantasy Power Rankings Generator</span>
   <span class="spacer"></span>
   <span style="padding-right: 5px">Hello
-  <span *ngIf="false">Name</span>
-  <span>Guest</span>
+  <span *ngIf="user">{{user.email}}</span>
+  <span *ngIf="!user">Guest</span>
   </span>
-  <button class="button submit-button" mat-raised-button color="secondary" (click)="openDialog()">Login</button>
+  <button class="button submit-button" mat-raised-button color="secondary" (click)="logout()" *ngIf="user">Logout</button>
+  <button class="button submit-button" mat-raised-button color="secondary" (click)="openDialog()" *ngIf="!user">Login</button>
 </mat-toolbar>
 <div class="split left" *ngIf="leagueConfigForm !== undefined">
 <!--  <mat-form-field>-->

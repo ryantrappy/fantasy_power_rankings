@@ -10,6 +10,9 @@ import {RankingsService} from './services/rankings.service';
 import * as sampleData from './data/LeagueConfigSample';
 import {MatDialog} from '@angular/material/dialog';
 import {LoginDialogComponent} from './login/login.component';
+import {AuthService} from './services/auth.service';
+import {UserService} from './services/user.service';
+import {IUser} from './login/IUser';
 
 
 @Component({
@@ -23,7 +26,12 @@ export class AppComponent implements OnInit {
 
   constructor(private storageService: StorageService,
               private rankingsService: RankingsService,
+              private authService: AuthService,
+              private userService: UserService,
               public dialog: MatDialog) {
+    this.cookie = this.authService.getUserFromCookie();
+
+
     this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
       this.leagueConfigForm = data[0];
       // this.configsArray = storageService.getLeagueConfigs();
@@ -43,6 +51,9 @@ export class AppComponent implements OnInit {
       }
     });
   }
+  cookie: any;
+  user: IUser;
+
   title = 'fantasy-power-rankings';
   currentYear = new Date().getFullYear();
   weeks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
@@ -58,6 +69,13 @@ export class AppComponent implements OnInit {
   trackById: TrackByFunction<number>;
 
   ngOnInit(): void {
+    if (this.cookie !== undefined && this.cookie._id){
+      this.userService.getUserById(this.cookie._id).subscribe((data: any) => {
+        this.user = data;
+      });
+    }
+
+
     this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
       console.log(data[0]);
       this.leagueConfigForm = data[0];
@@ -76,9 +94,13 @@ export class AppComponent implements OnInit {
       }
 
     });
-
-
   }
+
+  logout(): void {
+    this.user = undefined;
+    this.authService.removeAuth();
+  }
+
   openDialog(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
       width: '250px',
@@ -86,8 +108,17 @@ export class AppComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      this.loginDialogClosed();
     });
+  }
+
+  loginDialogClosed(): void {
+    this.cookie = this.authService.getUserFromCookie();
+    if (this.cookie !== undefined && this.cookie._id){
+      this.userService.getUserById(this.cookie._id).subscribe((data: any) => {
+        this.user = data;
+      });
+    }
   }
 
 
