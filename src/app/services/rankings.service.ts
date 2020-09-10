@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {LeagueConfig} from '../LeagueConfig';
+import {LeagueConfig} from '../Models/LeagueConfig';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -15,5 +15,9 @@ export class RankingsService {
 
   getRankingForLeague(leagueId: string): Observable<LeagueConfig> {
     return this.http.get<LeagueConfig>(this.serviceUrl + `leagues/${leagueId}`);
+  }
+
+  saveRanking(ranking: LeagueConfig): any {
+    return this.http.post<any>(this.serviceUrl, ranking);
   }
 }

@@ -25,12 +25,14 @@ export class LoginDialogComponent {
   }
 
   login(): void {
+    console.log('now')
     this.authService.login(this.username, this.password).subscribe((response) => {
       this.authService.setAuth(response);
       this.setErrorText('');
       this.dialogRef.close();
       },
       (err: any) => {
+      console.error(err);
         this.setErrorText('Invalid password or username');
       });
   }

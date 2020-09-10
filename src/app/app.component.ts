@@ -2,8 +2,8 @@ import {Component, Injectable, OnInit, TrackByFunction, ViewChild} from '@angula
 import * as html2canvas from './libraries/html2canvas.min.js';
 import * as fileSaver from './libraries/FileSaver.min.js';
 import { StorageService} from './storage.service';
-import {TeamRanking} from './TeamRanking';
-import {LeagueConfig} from './LeagueConfig';
+import {TeamRanking} from './Models/TeamRanking';
+import {LeagueConfig} from './Models/LeagueConfig';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatTable} from '@angular/material/table';
 import {RankingsService} from './services/rankings.service';
@@ -13,6 +13,7 @@ import {LoginDialogComponent} from './login/login.component';
 import {AuthService} from './services/auth.service';
 import {UserService} from './services/user.service';
 import {IUser} from './login/IUser';
+import {LeaguesService} from './services/leagues.service';
 
 
 @Component({
@@ -26,74 +27,63 @@ export class AppComponent implements OnInit {
 
   constructor(private storageService: StorageService,
               private rankingsService: RankingsService,
+              private leaguesService: LeaguesService,
               private authService: AuthService,
               private userService: UserService,
               public dialog: MatDialog) {
     this.cookie = this.authService.getUserFromCookie();
 
 
-    this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
-      this.leagueConfigForm = data[0];
-      // this.configsArray = storageService.getLeagueConfigs();
-      if (!this.configsArray || this.configsArray.length === 0) {
-        this.configsArray = [];
-        // @ts-ignore
-        this.configsArray.push(sampleData);
-      } else {
-        this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-        this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-        this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-        this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-      }
-      this.leagueConfig = this.configsArray[0];
-      if (!this.leagueConfigForm) {
-        // this.leagueConfigForm = Object.assign({}, this.leagueConfig);
-      }
-    });
+    // this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
+    //   this.leagueConfigForm = data[0];
+    //   // this.configsArray = storageService.getLeagueConfigs();
+    //   if (!this.configsArray || this.configsArray.length === 0) {
+    //     this.configsArray = [];
+    //     // @ts-ignore
+    //     this.configsArray.push(sampleData);
+    //   } else {
+    //     this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+    //     this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+    //     this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
+    //     this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
+    //   }
+    //   this.leagueConfig = this.configsArray[0];
+    //   if (!this.leagueConfigForm) {
+    //     // this.leagueConfigForm = Object.assign({}, this.leagueConfig);
+    //   }
+    // });
   }
   cookie: any;
   user: IUser;
 
   title = 'fantasy-power-rankings';
-  currentYear = new Date().getFullYear();
+  currentLeague = '';
+  currentYear = 2019;
   weeks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
-  currentWeek = 0;
+  currentWeek = 2;
   currentWeekRanking: Array<TeamRanking> = [];
   previousWeekRanking: Array<TeamRanking> = [];
   currentWeekRankingForm: Array<TeamRanking>;
   previousWeekRankingForm: Array<TeamRanking>;
   leagueConfig: LeagueConfig;
-  leagueConfigForm: LeagueConfig;
+  leagueConfigForm: LeagueConfig = new LeagueConfig();
+
+  leagues: Array<LeagueConfig> = [];
+
   configsArray: Array<LeagueConfig> = [];
-  displayedColumns: string[] = ['teamName', 'managerName', 'description', 'wins', 'losses', 'ties'];
+  displayedColumns: string[] = ['position', 'teamName', 'managerName', 'description', 'wins', 'losses', 'ties'];
   trackById: TrackByFunction<number>;
 
   ngOnInit(): void {
     if (this.cookie !== undefined && this.cookie._id){
       this.userService.getUserById(this.cookie._id).subscribe((data: any) => {
         this.user = data;
+        this.currentLeague = this.user.leagues[0];
+        this.initialize();
       });
     }
 
 
-    this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
-      console.log(data[0]);
-      this.leagueConfigForm = data[0];
-
-      this.getRankingImage();
-      if (this.currentWeekRanking) {
-        this.currentWeekRankingForm = [
-          ...this.currentWeekRanking
-        ].map(i => ({ ...i}));
-      }
-
-      if (this.previousWeekRanking) {
-        this.previousWeekRankingForm = [
-          ...this.previousWeekRanking
-        ].map(i => ({ ...i}));
-      }
-
-    });
   }
 
   logout(): void {
@@ -121,13 +111,85 @@ export class AppComponent implements OnInit {
     }
   }
 
-
-  addTeam() {
-    const teamRanking = new TeamRanking();
-    console.log(teamRanking);
-    this.currentWeekRankingForm.push(teamRanking);
-    console.log(this.currentWeekRankingForm);
+  initialize(): void {
+    this.getLeagueById(this.currentLeague);
   }
+
+  getLeagueById(id: string): void {
+    this.rankingsService.getRankingForLeague(id).subscribe((rankingData: any) => {
+      console.log(rankingData);
+      if (rankingData[0] === undefined){
+        console.log('creating new ranking');
+        this.leagueConfigForm = new LeagueConfig();
+        this.generateNewRanking(id);
+      } else {
+        console.log('loading previous');
+        this.leagueConfigForm = new LeagueConfig(rankingData[0]);
+        console.dir(rankingData[0]);
+      }
+
+
+      this.getRankingImage();
+      // if (this.currentWeekRanking) {
+      //   this.currentWeekRankingForm = [
+      //     ...this.currentWeekRanking
+      //   ].map(i => ({ ...i}));
+      // }
+      //
+      // if (this.previousWeekRanking) {
+      //   this.previousWeekRankingForm = [
+      //     ...this.previousWeekRanking
+      //   ].map(i => ({ ...i}));
+      // }
+    });
+
+  }
+
+  generateNewRanking(id: string){
+    this.leaguesService.getLeagueInfoForYear(id, this.currentYear).subscribe((leagueData: any) => {
+      console.log('got league info');
+      console.log(leagueData);
+      this.leagueConfigForm.leagueId = id;
+      this.leagueConfigForm.leagueName = leagueData.name;
+      this.leagueConfigForm.week = this.currentWeek;
+      this.leagueConfigForm.year = this.currentYear;
+
+      this.leaguesService.getTeamsForLeague(id, this.currentYear, this.currentWeek).subscribe((teamData: any) => {
+        console.log('got teams');
+        console.log(teamData);
+        for (let i = 0; i < teamData.length; i++){
+          const cur = new TeamRanking(teamData[i]);
+          this.leagueConfigForm.teams.push(cur);
+        }
+
+        this.currentWeekRanking = [
+          ...this.leagueConfigForm.teams
+        ].map(i => ({ ...i}));
+
+        this.regenerateRankings();
+
+        if (this.previousWeekRanking) {
+          this.previousWeekRankingForm = [
+            ...this.leagueConfigForm.teams
+          ].map(i => ({ ...i}));
+        }
+
+        this.table.renderRows();
+      });
+    });
+  }
+
+  save(){
+      this.leagueConfigForm.week = this.currentWeek;
+      this.leagueConfigForm.year = this.currentYear;
+      this.rankingsService.saveRanking(this.leagueConfigForm).subscribe((response) => {
+          console.log(response);
+      },
+        (err: any) => {
+          console.error(err);
+        });
+  }
+
   getRecord(teamRanking: TeamRanking) {
     let result = teamRanking.wins + '-' + teamRanking.loss;
     if (teamRanking.ties !== 0) {
@@ -137,33 +199,34 @@ export class AppComponent implements OnInit {
   }
   regenerateRankings() {
     // Deep clone both arrays so that mutations don't affect table
-    this.currentWeekRanking = [
-      ...this.currentWeekRankingForm
-    ].map(i => ({ ...i}));
+    // this.currentWeekRanking = [
+    //   ...this.currentWeekRankingForm
+    // ].map(i => ({ ...i}));
+    //
+    // if (this.previousWeekRankingForm) {
+    //   this.previousWeekRanking = [
+    //     ...this.previousWeekRankingForm
+    //   ].map(i => ({ ...i}));
+    // }
 
-    if (this.previousWeekRankingForm) {
-      this.previousWeekRanking = [
-        ...this.previousWeekRankingForm
+    this.currentWeekRanking = [
+        ...this.leagueConfigForm.teams
+      ].map(i => ({ ...i}));
+
+    if (this.previousWeekRanking) {
+      this.previousWeekRankingForm = [
+        ...this.leagueConfigForm.teams
       ].map(i => ({ ...i}));
     }
 
     // Clone league config
-    // this.leagueConfig = Object.assign({}, this.leagueConfigForm);
-    // this.configsArray[0] = this.leagueConfig;
-    // this.storageService.setCurrentWeekFromStorage(this.currentWeekRankingForm, this.leagueConfig.leagueName);
-    // this.storageService.setLeagueConfigs(this.configsArray);
-    // this.getRankingImage();
+    this.leagueConfig = Object.assign({}, this.leagueConfigForm);
+    this.getRankingImage();
   }
 
   drop(event: CdkDragDrop<Array<TeamRanking>>) {
-    // console.log('new');
-    // console.log(this.currentWeekRankingForm);
-    // moveItemInArray(this.currentWeekRankingForm, event.previousIndex, event.currentIndex);
-    this.arrayMove(this.currentWeekRankingForm, event.previousIndex, event.currentIndex);
+    this.arrayMove(this.leagueConfigForm.teams, event.previousIndex, event.currentIndex);
     this.table.renderRows();
-    console.log(event.previousIndex, event.currentIndex);
-    // updates moved data and table, but not dynamic if more dropzones
-    // this.currentWeekRankingForm = clonedeep(this.dataSource.data);
   }
 
   arrayMove(arr: Array<any>, oldIndex: number, newIndex: number): Array<any> {
@@ -254,7 +317,6 @@ export class AppComponent implements OnInit {
       circleChild++;
     });
     resultString = resultString + '';
-
     const head = document.getElementsByTagName('head')[0];
     const style = document.createElement('style');
     style.id = 'images-styles';
