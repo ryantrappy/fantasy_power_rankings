@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {IUser} from '../login/IUser';
+import {CookieService} from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +12,18 @@ export class AuthService {
   };
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private cookieService: CookieService
   ) { }
+
+  setAuth(authResponse: any) {
+    let authData = authResponse.data;
+    authData = authData.replace('Authorization=', '')
+    this.cookieService.set('AuthHeader', authData);
+  }
+  getAuth(): string {
+    return this.cookieService.get('AuthHeader');
+  }
 
   login(email: string, password: string) {
     const body = {

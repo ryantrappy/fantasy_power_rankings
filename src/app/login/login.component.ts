@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {IUser} from './IUser';
-import {AuthService} from "../services/auth.service";
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-login-dialog',
@@ -26,6 +26,7 @@ export class LoginDialogComponent {
 
   login(): void {
     this.authService.login(this.username, this.password).subscribe((response) => {
+      this.authService.setAuth(response);
       this.setErrorText('');
       this.dialogRef.close();
       },

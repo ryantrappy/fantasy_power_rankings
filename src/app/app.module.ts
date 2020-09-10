@@ -9,10 +9,12 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {LoginDialogComponent} from './login/login.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {CookieService} from 'ngx-cookie-service';
+import {TokenInterceptor} from './services/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,14 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatDialogModule,
     DragDropModule
   ],
-  providers: [],
+  providers: [
+    CookieService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

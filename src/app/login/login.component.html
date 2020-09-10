@@ -6,7 +6,7 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Password</mat-label>
-    <input matInput [(ngModel)]="password">
+    <input matInput type="password" [(ngModel)]="password">
   </mat-form-field>
   <span *ngIf="errorText.length > 0" style="color: red">{{errorText}}</span>
 </div>
