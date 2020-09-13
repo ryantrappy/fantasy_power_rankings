@@ -18,7 +18,7 @@ export class LeagueConfig {
     this.week = props.week;
     this.year = props.year;
     this.rankingsTitle = props.rankingsTitle;
-    console.log(props.teams);
+    this._id = props._id;
     if (props.teams){
       for (const team of props.teams){
         this.teams.push(team);
@@ -33,4 +33,6 @@ export class LeagueConfig {
   week: number;
   year: number;
   teams: Array<TeamRanking> = [];
+  // tslint:disable-next-line:variable-name
+  _id?: string;
 }

@@ -32,47 +32,23 @@ export class AppComponent implements OnInit {
               private userService: UserService,
               public dialog: MatDialog) {
     this.cookie = this.authService.getUserFromCookie();
-
-
-    // this.rankingsService.getRankingForLeague('18070232').subscribe((data: any) => {
-    //   this.leagueConfigForm = data[0];
-    //   // this.configsArray = storageService.getLeagueConfigs();
-    //   if (!this.configsArray || this.configsArray.length === 0) {
-    //     this.configsArray = [];
-    //     // @ts-ignore
-    //     this.configsArray.push(sampleData);
-    //   } else {
-    //     this.currentWeekRanking = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-    //     this.previousWeekRanking = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-    //     this.currentWeekRankingForm = storageService.getCurrentWeekFromStorage(this.configsArray[0].leagueName);
-    //     this.previousWeekRankingForm = storageService.getPreviousWeekFromStorage(this.configsArray[0].leagueName);
-    //   }
-    //   this.leagueConfig = this.configsArray[0];
-    //   if (!this.leagueConfigForm) {
-    //     // this.leagueConfigForm = Object.assign({}, this.leagueConfig);
-    //   }
-    // });
   }
   cookie: any;
   user: IUser;
 
   title = 'fantasy-power-rankings';
   currentLeague = '';
-  currentYear = 2019;
+  currentYear = 2020;
   weeks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
   currentWeek = 2;
-  currentWeekRanking: Array<TeamRanking> = [];
-  previousWeekRanking: Array<TeamRanking> = [];
-  currentWeekRankingForm: Array<TeamRanking>;
-  previousWeekRankingForm: Array<TeamRanking>;
   leagueConfig: LeagueConfig;
+  newLeagueConfig: LeagueConfig = new LeagueConfig();
   leagueConfigForm: LeagueConfig = new LeagueConfig();
+  leagues: { [key: string]: Array<LeagueConfig> } = {};
+  displayedColumns: string[] = [' ', 'position', 'teamName', 'managerName', 'description', 'wins', 'losses', 'ties'];
 
-  leagues: Array<LeagueConfig> = [];
 
-  configsArray: Array<LeagueConfig> = [];
-  displayedColumns: string[] = ['position', 'teamName', 'managerName', 'description', 'wins', 'losses', 'ties'];
-  trackById: TrackByFunction<number>;
+  currentWeekRanking: Array<TeamRanking> = [];
 
   ngOnInit(): void {
     if (this.cookie !== undefined && this.cookie._id){
@@ -82,8 +58,6 @@ export class AppComponent implements OnInit {
         this.initialize();
       });
     }
-
-
   }
 
   logout(): void {
@@ -113,53 +87,57 @@ export class AppComponent implements OnInit {
 
   initialize(): void {
     this.getLeagueById(this.currentLeague);
+    this.generateRanking(this.currentLeague);
+  }
+
+
+  yearChange(): void {
+    if ((this.currentYear + '').length !== 4) { return; }
+    this.generateRanking(this.currentLeague);
   }
 
   getLeagueById(id: string): void {
     this.rankingsService.getRankingForLeague(id).subscribe((rankingData: any) => {
       console.log(rankingData);
+      this.leagues[id] = rankingData;
       if (rankingData[0] === undefined){
         console.log('creating new ranking');
         this.leagueConfigForm = new LeagueConfig();
         this.generateNewRanking(id);
       } else {
         console.log('loading previous');
-        this.leagueConfigForm = new LeagueConfig(rankingData[0]);
-        console.dir(rankingData[0]);
+        this.leagueConfigForm = new LeagueConfig(rankingData[rankingData.length - 1]);
+        this.currentWeek = this.leagueConfigForm.week;
+        this.currentYear = this.leagueConfigForm.year;
+        this.table.renderRows();
       }
 
 
       this.getRankingImage();
-      // if (this.currentWeekRanking) {
-      //   this.currentWeekRankingForm = [
-      //     ...this.currentWeekRanking
-      //   ].map(i => ({ ...i}));
-      // }
-      //
-      // if (this.previousWeekRanking) {
-      //   this.previousWeekRankingForm = [
-      //     ...this.previousWeekRanking
-      //   ].map(i => ({ ...i}));
-      // }
     });
+  }
 
+  loadSelectedWeek() {
+      this.currentWeek = this.leagueConfigForm.week;
+      this.currentYear = this.leagueConfigForm.year;
+      this.regenerateRankings();
   }
 
   generateNewRanking(id: string){
+    this.leagueConfigForm = new LeagueConfig();
     this.leaguesService.getLeagueInfoForYear(id, this.currentYear).subscribe((leagueData: any) => {
-      console.log('got league info');
-      console.log(leagueData);
       this.leagueConfigForm.leagueId = id;
       this.leagueConfigForm.leagueName = leagueData.name;
       this.leagueConfigForm.week = this.currentWeek;
       this.leagueConfigForm.year = this.currentYear;
 
       this.leaguesService.getTeamsForLeague(id, this.currentYear, this.currentWeek).subscribe((teamData: any) => {
-        console.log('got teams');
-        console.log(teamData);
         for (let i = 0; i < teamData.length; i++){
+          teamData[i].teamId = teamData[i].id;
           const cur = new TeamRanking(teamData[i]);
           this.leagueConfigForm.teams.push(cur);
+          console.log('adding team to new config');
+          this.newLeagueConfig.teams.push(Object.assign({}, cur));
         }
 
         this.currentWeekRanking = [
@@ -168,22 +146,55 @@ export class AppComponent implements OnInit {
 
         this.regenerateRankings();
 
-        if (this.previousWeekRanking) {
-          this.previousWeekRankingForm = [
-            ...this.leagueConfigForm.teams
-          ].map(i => ({ ...i}));
-        }
-
         this.table.renderRows();
       });
     });
   }
 
+  generateRanking(id: string): void{
+    const league = new LeagueConfig();
+    league.leagueId = id;
+    league.week = this.currentWeek;
+    league.year = this.currentYear;
+
+    this.leaguesService.getLeagueInfoForYear(id, new Date().getFullYear()).subscribe((leagueData: any) => {
+      this.leagueConfigForm.leagueName = leagueData.name;
+      this.leaguesService.getTeamsForLeague(id, this.currentYear, this.currentWeek).subscribe((teamData: any) => {
+        for (let i = 0; i < teamData.length; i++){
+          teamData[i].teamId = teamData[i].id;
+          const cur = new TeamRanking(teamData[i]);
+          league.teams.push(cur);
+        }
+        league.teams.sort((a, b) => {
+          return a.position - b.position;
+        });
+        this.newLeagueConfig = league;
+        this.table.renderRows();
+      });
+    });
+  }
+
+
   save(){
-      this.leagueConfigForm.week = this.currentWeek;
-      this.leagueConfigForm.year = this.currentYear;
-      this.rankingsService.saveRanking(this.leagueConfigForm).subscribe((response) => {
+    this.leagueConfigForm.week = this.currentWeek;
+    this.leagueConfigForm.year = this.currentYear;
+    for (let i = 0; i < this.leagueConfigForm.teams.length; i++) {
+      this.leagueConfigForm.teams[i].position = i;
+    }
+    const bool = this.leagues[this.currentLeague].filter( cur => cur.week === this.leagueConfigForm.week && cur.year === this.leagueConfigForm.year);
+    if (bool){
+      this.rankingsService.updateRanking(this.leagueConfigForm).subscribe((response) => {
+          console.log('success');
+          this.initialize();
+        },
+        (err: any) => {
+          console.error(err);
+        });
+      return;
+    }
+    this.rankingsService.saveRanking(this.leagueConfigForm).subscribe((response) => {
           console.log(response);
+          this.initialize();
       },
         (err: any) => {
           console.error(err);
@@ -199,25 +210,9 @@ export class AppComponent implements OnInit {
   }
   regenerateRankings() {
     // Deep clone both arrays so that mutations don't affect table
-    // this.currentWeekRanking = [
-    //   ...this.currentWeekRankingForm
-    // ].map(i => ({ ...i}));
-    //
-    // if (this.previousWeekRankingForm) {
-    //   this.previousWeekRanking = [
-    //     ...this.previousWeekRankingForm
-    //   ].map(i => ({ ...i}));
-    // }
-
     this.currentWeekRanking = [
         ...this.leagueConfigForm.teams
       ].map(i => ({ ...i}));
-
-    if (this.previousWeekRanking) {
-      this.previousWeekRankingForm = [
-        ...this.leagueConfigForm.teams
-      ].map(i => ({ ...i}));
-    }
 
     // Clone league config
     this.leagueConfig = Object.assign({}, this.leagueConfigForm);
@@ -240,28 +235,33 @@ export class AppComponent implements OnInit {
     return arr; // for testing
   }
 
-  saveAsPreviousWeek() {
-    this.storageService.setPreviousWeekFromStorage(this.currentWeekRankingForm, this.configsArray[0].leagueName);
-    this.previousWeekRanking = [
-      ...this.currentWeekRankingForm
-    ].map(i => ({ ...i}));
-    this.previousWeekRankingForm = [
-      ...this.currentWeekRankingForm
-    ].map(i => ({ ...i}));
-    this.regenerateRankings();
-  }
-  getPreviousWeekPosition(managerName: string) {
-    if (!this.previousWeekRanking) { return undefined; }
-    return this.previousWeekRanking.findIndex ((element) => {
-      return element.managerName === managerName;
+  getPreviousWeekPosition(id: number) {
+    // tslint:disable-next-line:triple-equals
+    const previousWeek = this.leagues[this.currentLeague].find(cur => cur.year == this.currentYear && cur.week === (this.currentWeek - 1));
+    if (!previousWeek) { return undefined; }
+    return previousWeek.teams.findIndex ((element) => {
+      return element.teamId === id;
     }) + 1;
   }
-  getLastWeekPositionString(managerName: string) {
-    const lastWeeksRanking = this.getPreviousWeekPosition(managerName);
+  getLastWeekPositionString(id: number) {
+    const lastWeeksRanking = this.getPreviousWeekPosition(id);
     return (lastWeeksRanking) ? 'Last Week: ' + lastWeeksRanking : '';
   }
 
-  getDeltaSymbolClass(delta) {
+  getDelta(rankingObject: TeamRanking, i: number): number{
+    let delta = 0;
+    i++;
+    const prev = this.getPreviousWeekPosition(rankingObject.teamId);
+    if (prev === undefined) {
+      delta = 0;
+    } else {
+      delta = i - this.getPreviousWeekPosition(rankingObject.teamId);
+    }
+    return delta;
+  }
+
+  getDeltaSymbolClass(rankingObject: TeamRanking, i: number) {
+    const delta = this.getDelta(rankingObject, i);
     if (delta < 0) {
       return 'up';
     } else if (delta > 0) {
@@ -271,7 +271,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  getDeltaClass(delta) {
+  getDeltaClass(rankingObject: TeamRanking, i: number) {
+    const delta = this.getDelta(rankingObject, i);
     if (delta < 0) {
       return 'delta-up';
     } else if (delta > 0) {
@@ -281,7 +282,8 @@ export class AppComponent implements OnInit {
     }
   }
 
-  getDeltaString(delta) {
+  getDeltaString(rankingObject: TeamRanking, i: number) {
+    const delta = this.getDelta(rankingObject, i);
     if (delta === 0) {
       return '---';
     } else if (delta < 0) {

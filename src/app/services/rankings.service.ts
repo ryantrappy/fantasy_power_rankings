@@ -20,4 +20,8 @@ export class RankingsService {
   saveRanking(ranking: LeagueConfig): any {
     return this.http.post<any>(this.serviceUrl, ranking);
   }
+
+  updateRanking(ranking: LeagueConfig): any {
+    return this.http.put<any>(this.serviceUrl + `leagues/${ranking.leagueId}/seasons/${ranking.year}/weeks/${ranking.week}`, ranking);
+  }
 }

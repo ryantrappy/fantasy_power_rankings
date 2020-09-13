@@ -42,6 +42,9 @@ mat-form-field {
   right: 0;
   border-left: 1px solid black;
 }
+.mat-cell {
+  cursor: move;
+}
 
 
 /* If you want the content centered horizontally and vertically */

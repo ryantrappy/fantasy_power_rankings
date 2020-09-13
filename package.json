@@ -25,6 +25,7 @@
     "angular-cli-ghpages": "^0.6.2",
     "jwt-decode": "^2.2.0",
     "ngx-cookie-service": "^10.0.1",
+    "material-design-icons": "^3.0.1",
     "rxjs": "~6.6.0",
     "terser": "~3.14.1",
     "tslib": "^2.0.0",
