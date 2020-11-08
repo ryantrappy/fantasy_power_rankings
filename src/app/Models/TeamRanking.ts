@@ -1,3 +1,5 @@
+import {upperCaseFirstLetter} from '../Utils/Util';
+
 export class TeamRanking {
   constructor(props?) {
     if (!props){
@@ -12,9 +14,12 @@ export class TeamRanking {
     }
     this.teamName = props.name;
     this.description = 'Manager\s name cannot change week to week as it is used to track previous weeks';
-    this.managerName = 'Manager\s name';
+    this.managerName = upperCaseFirstLetter(props.firstName) + ' ' + upperCaseFirstLetter(props.lastName);
     this.wins = props.wins;
     this.loss = props.losses;
+    if (props.loss){
+      this.loss = props.loss;
+    }
     this.ties = props.ties;
     this.id = props._id;
     this.position = props.position;

@@ -182,7 +182,7 @@ export class AppComponent implements OnInit {
       this.leagueConfigForm.teams[i].position = i;
     }
     const bool = this.leagues[this.currentLeague].filter( cur => cur.week === this.leagueConfigForm.week && cur.year === this.leagueConfigForm.year);
-    if (bool){
+    if (bool && bool.length > 0){
       this.rankingsService.updateRanking(this.leagueConfigForm).subscribe((response) => {
           console.log('success');
           this.initialize();

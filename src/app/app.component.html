@@ -89,6 +89,10 @@
 <!--    <span>Rankings Introduction</span>-->
 <!--    <textarea name="text" rows="14" cols="10" wrap="soft" id="rankingIntroduction" [(ngModel)]="leagueConfigForm.introduction"> </textarea>-->
 <!--  </ng-container>-->
+<br/>
+  <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="save()" *ngIf="user">Save Week</button>
+  <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="regenerateRankings()">Generate Rankings Image</button>
+
   <mat-table [dataSource]="leagueConfigForm.teams" class="mat-elevation-z8" cdkDropList [cdkDropListData]="leagueConfigForm.teams"
              (cdkDropListDropped)="drop($event);">
     <ng-container matColumnDef=" " width="3">
@@ -139,12 +143,14 @@
   </mat-table>
 
 <!--    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="addTeam()">Add Team</button>-->
-    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="save()" *ngIf="user">Save Week</button>
-    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="regenerateRankings()">Generate Rankings Image</button>
-<!--    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="saveAsPreviousWeek()">Save Rankings as Previous Week</button>-->
+   <!--    <button class="button submit-button" mat-raised-button color="primary" type="submit" (click)="saveAsPreviousWeek()">Save Rankings as Previous Week</button>-->
 </div>
 
 <div class="split right">
+  <div style='width: 100%;'>
+    <button mat-raised-button color="primary" (click)="generateScreenshot()" class="download-button">Download Rankings Image</button>
+  </div>
+  <div style='height: 1vh;'></div>
   <div id='powerRanking' *ngIf="leagueConfig !== undefined">
     <table id='powerRankingTable'>
       <tr>
@@ -182,10 +188,6 @@
       </ng-container>
 
     </table>
-  </div>
-  <div style='height: 5vh;'></div>
-  <div style='width: 100%;'>
-    <button mat-raised-button color="primary" (click)="generateScreenshot()" class="download-button">Download Rankings Image</button>
   </div>
 </div>
 
