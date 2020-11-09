@@ -147,12 +147,15 @@ export class AppComponent implements OnInit {
       this.leaguesService.getTeamsForLeague(id, this.currentYear, this.currentWeek).subscribe((teamData: any) => {
         for (let i = 0; i < teamData.length; i++){
           teamData[i].teamId = teamData[i].id;
-          teamData[i].position = i;
+          teamData[i].position = this.getPreviousWeekPosition(teamData[i].teamId);
+          this.getPreviousWeekPosition(teamData[i].teamId);
           const cur = new TeamRanking(teamData[i]);
           this.leagueConfigForm.teams.push(cur);
-          console.log('adding team to new config');
           this.newLeagueConfig.teams.push(Object.assign({}, cur));
         }
+        this.leagueConfigForm.teams.sort((a, b) => {
+          return a.position - b.position;
+        });
 
         this.currentWeekRanking = [
           ...this.leagueConfigForm.teams
