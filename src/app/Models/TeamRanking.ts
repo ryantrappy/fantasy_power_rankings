@@ -4,7 +4,7 @@ export class TeamRanking {
   constructor(props?) {
     if (!props){
       this.teamName = 'Team Name';
-      this.description = 'Manager\s name cannot change week to week as it is used to track previous weeks';
+      this.description = 'Description';
       this.managerName = 'Manager\s name';
       this.wins = 0;
       this.loss = 0;
@@ -13,7 +13,7 @@ export class TeamRanking {
       return;
     }
     this.teamName = props.name;
-    this.description = 'Manager\s name cannot change week to week as it is used to track previous weeks';
+    this.description = 'Description';
     this.managerName = upperCaseFirstLetter(props.firstName) + ' ' + upperCaseFirstLetter(props.lastName);
     this.wins = props.wins;
     this.loss = props.losses;
@@ -22,7 +22,12 @@ export class TeamRanking {
     }
     this.ties = props.ties;
     this.id = props._id;
-    this.position = props.position;
+    if (props.position !== undefined) {
+      this.position = props.position;
+    } else {
+      this.position = this.teamId;
+    }
+
     if (props.teamId){
       this.teamId = props.teamId;
     }

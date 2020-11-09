@@ -14,6 +14,7 @@ import {AuthService} from './services/auth.service';
 import {UserService} from './services/user.service';
 import {IUser} from './login/IUser';
 import {LeaguesService} from './services/leagues.service';
+import {EditDialogComponent} from './edit/edit/edit.component';
 
 
 @Component({
@@ -45,7 +46,7 @@ export class AppComponent implements OnInit {
   newLeagueConfig: LeagueConfig = new LeagueConfig();
   leagueConfigForm: LeagueConfig = new LeagueConfig();
   leagues: { [key: string]: Array<LeagueConfig> } = {};
-  displayedColumns: string[] = [' ', 'position', 'teamName', 'managerName', 'description', 'wins', 'losses', 'ties'];
+  displayedColumns: string[] = [' ', 'position', 'teamName', 'managerName', 'description', 'wins', 'losses', 'ties', 'edit'];
 
 
   currentWeekRanking: Array<TeamRanking> = [];
@@ -65,7 +66,7 @@ export class AppComponent implements OnInit {
     this.authService.removeAuth();
   }
 
-  openDialog(): void {
+  openLoginDialog(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
       width: '250px',
       data: {}
@@ -85,6 +86,19 @@ export class AppComponent implements OnInit {
     }
   }
 
+  openEditDialog(team: TeamRanking): void {
+    const dialogRef = this.dialog.open(EditDialogComponent, {
+      width: '80vw',
+      data: team
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.editDialogClosed();
+    });
+  }
+
+  editDialogClosed(): void {}
+
   initialize(): void {
     this.getLeagueById(this.currentLeague);
     this.generateRanking(this.currentLeague);
@@ -98,7 +112,6 @@ export class AppComponent implements OnInit {
 
   getLeagueById(id: string): void {
     this.rankingsService.getRankingForLeague(id).subscribe((rankingData: any) => {
-      console.log(rankingData);
       this.leagues[id] = rankingData;
       if (rankingData[0] === undefined){
         console.log('creating new ranking');
@@ -134,6 +147,7 @@ export class AppComponent implements OnInit {
       this.leaguesService.getTeamsForLeague(id, this.currentYear, this.currentWeek).subscribe((teamData: any) => {
         for (let i = 0; i < teamData.length; i++){
           teamData[i].teamId = teamData[i].id;
+          teamData[i].position = i;
           const cur = new TeamRanking(teamData[i]);
           this.leagueConfigForm.teams.push(cur);
           console.log('adding team to new config');
@@ -165,9 +179,11 @@ export class AppComponent implements OnInit {
           const cur = new TeamRanking(teamData[i]);
           league.teams.push(cur);
         }
+        console.log(league.teams);
         league.teams.sort((a, b) => {
           return a.position - b.position;
         });
+        console.log(league.teams);
         this.newLeagueConfig = league;
         this.table.renderRows();
       });

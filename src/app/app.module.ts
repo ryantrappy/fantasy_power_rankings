@@ -15,11 +15,13 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {CookieService} from 'ngx-cookie-service';
 import {TokenInterceptor} from './services/token.interceptor';
+import { EditDialogComponent } from './edit/edit/edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    EditDialogComponent
   ],
   imports: [
     BrowserModule,

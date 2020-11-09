@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Edit User: {{data.teamName}}</h1>
+<div mat-dialog-content>
+<!--  <mat-form-field>-->
+<!--    <mat-label>Description</mat-label>-->
+<!--    <input matInput [(ngModel)]="data.description" width="100%" height="80%">-->
+<!--  </mat-form-field>-->
+  <mat-form-field style="width: 70vw;">
+      <textarea matInput
+                placeholder="Description"  cdkTextareaAutosize
+                cdkAutosizeMinRows="1"
+                cdkAutosizeMaxRows="20" [(ngModel)]="description" ></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button (click)="save()" cdkFocusInitial>Save</button>
+</div>

@@ -1,6 +1,5 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {IUser} from './IUser';
 import {AuthService} from '../services/auth.service';
 
 @Component({
@@ -25,7 +24,7 @@ export class LoginDialogComponent {
   }
 
   login(): void {
-    console.log('now')
+    console.log('now');
     this.authService.login(this.username, this.password).subscribe((response) => {
       this.authService.setAuth(response);
       this.setErrorText('');
@@ -33,7 +32,7 @@ export class LoginDialogComponent {
       },
       (err: any) => {
       console.error(err);
-        this.setErrorText('Invalid password or username');
+      this.setErrorText('Invalid password or username');
       });
   }
 
